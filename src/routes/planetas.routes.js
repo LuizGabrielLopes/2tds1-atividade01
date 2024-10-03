@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { response, Router } from "express";
 
 const planetasRoutes = Router();
 
@@ -8,7 +8,7 @@ let planetas = [
         nome: "Dev",
         temperatura: "13.3",
         agua: false, //Indicação da existência de água
-        atm: [ 'JS', 'NODE', 'VS', 'Code' ]
+        atm: ['JS', 'NODE', 'VS', 'Code']
     },
 ];
 
@@ -19,16 +19,33 @@ planetasRoutes.get("/", (req, res) => {
 
 //Rota para criar novo filme
 planetasRoutes.post("/", (req, res) => {
-    const { titulo, genero, emCartaz } = req.body;
-    const novoFilme = {
-        id: Number(Math.floor(Math.random() * 99) + 1),
-        titulo,
-        genero,
-        emCartaz,
+    const { nome, temperatura, agua, atm } = req.body;
+
+    if (!nome || !temperatura || !agua) {
+        return res.status(400).send({
+            message: 'Os campos nome, temperatura e água são campos obrigatórios'
+        });
+    }
+
+    //Validação de existência de água
+    if(agua != "sim" && agua != "não") {
+        return res.status(400).send({
+            message: "Digite 'sim' ou 'não'!",
+        });
+    }
+
+    const novoPlaneta = {
+        id: Number(Math.floor(Math.random() * 999999) + 1),
+        nome,
+        temperatura,
+        agua,
+        atm
     };
 
-    planetas.push(novoFilme)
-    return res.status(201).send({ planetas })
+    planetas.push(novoPlaneta)
+    return res.status(201).send({ 
+        message: "Planeta cadastrado!", novoPlaneta,
+    })
 });
 
 //Rota para buscar um elemento específico do array planetas
